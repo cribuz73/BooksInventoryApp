@@ -12,14 +12,12 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.example.android.booksinventoryapp.Data.BooksContract;
 import com.example.android.booksinventoryapp.Data.BooksContract.BooksEntry;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
@@ -27,8 +25,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private static final int BOOKS_LOADER = 0;
 
     BooksCursorAdapter mCursorAdapter;
-
-    public static final String LOG_TAG = MainActivity.class.getSimpleName();
 
 
     @Override
@@ -39,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -56,47 +53,31 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mCursorAdapter = new BooksCursorAdapter(this, null);
         booksListView.setAdapter(mCursorAdapter);
 
-        Log.v(LOG_TAG, "S-a creat lista si agatat adapterul");
-
         booksListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                 Intent intent = new Intent(MainActivity.this, EditorActivity.class);
-
-                // Form the content URI that represents the specific pet that was clicked on,
-                // by appending the "id" (passed as input to this method) onto the
-                // {@link PetEntry#CONTENT_URI}.
-                // For example, the URI would be "content://com.example.android.pets/pets/2"
-                // if the pet with ID 2 was clicked on.
-                Uri currentPetUri = ContentUris.withAppendedId(BooksContract.BooksEntry.CONTENT_URI, id);
-
-                // Set the URI on the data field of the intent
-                intent.setData(currentPetUri);
-
-                // Launch the {@link EditorActivity} to display the data for the current pet.
+                Uri currentBookUri = ContentUris.withAppendedId(BooksEntry.CONTENT_URI, id);
+                intent.setData(currentBookUri);
                 startActivity(intent);
             }
         });
         getLoaderManager().initLoader(BOOKS_LOADER, null, this);
-        Log.v(LOG_TAG, "S-a initiat loaderul");
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_find) {
         insertBook();
         }
@@ -114,7 +95,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
-        Log.v(LOG_TAG, "S-a creat loaderul");
 
         String[] projection = {
                 BooksEntry._ID,
@@ -123,17 +103,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 BooksEntry.COLUMN_QUANTITY,
                 BooksEntry.COLUMN_PRICE};
 
-        // This loader will execute the ContentProvider's query method on a background thread
-        return new CursorLoader(this,   // Parent activity context
-                BooksEntry.CONTENT_URI,   // Provider content URI to query
-                projection,             // Columns to include in the resulting Cursor
-                null,                   // No selection clause
-                null,                   // No selection arguments
-                null);                  // Default sort order    }
+        return new CursorLoader(this,
+                BooksEntry.CONTENT_URI,
+                projection,
+                null,
+                null,
+                null);
     }
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            mCursorAdapter.swapCursor(data);
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+            mCursorAdapter.swapCursor(cursor);
     }
 
     @Override

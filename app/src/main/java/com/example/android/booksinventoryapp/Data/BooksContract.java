@@ -9,12 +9,15 @@ import android.provider.BaseColumns;
  */
 
 public final class BooksContract  {
+    public static final String LOG_TAG = BooksContract.class.getSimpleName();
 
     private BooksContract () {}
 
     public static final String CONTENT_AUTHORITY = "com.example.android.booksinventoryapp";
 
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+
+
     public static final String PATH_BOOKS = "books";
 
     public static final class BooksEntry implements BaseColumns {
@@ -29,6 +32,7 @@ public final class BooksContract  {
 
         public final static String TABLE_NAME = "books";
 
+
         public final static String _ID = BaseColumns._ID;
         public static final String COLUMN_IMAGE = "image";
         public static final String COLUMN_AUTHOR = "author";
@@ -38,7 +42,7 @@ public final class BooksContract  {
         public static final String COLUMN_QUANTITY = "quantity";
         public static final String COLUMN_PRICE = "price";
         public static final String COLUMN_SUPPLIER = "supplier";
-        public static final String COLUMN_SUPPLIER_EMAIL = "supp_email";
+        public static final String COLUMN_SUPPLIER_EMAIL = "supplierEmail";
 
     }
 }

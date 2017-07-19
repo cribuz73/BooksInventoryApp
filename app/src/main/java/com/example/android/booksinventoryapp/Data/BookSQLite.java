@@ -3,7 +3,6 @@ package com.example.android.booksinventoryapp.Data;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.example.android.booksinventoryapp.Data.BooksContract.BooksEntry;
 
@@ -24,7 +23,6 @@ public class BookSQLite extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.v(LOG_TAG, "Se initiaza crearea BAZEI DE DATE");
 
         String SQL_CREATE_BOOKS_TABLE =  "CREATE TABLE " + BooksEntry.TABLE_NAME + " ("
                 + BooksEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -38,8 +36,8 @@ public class BookSQLite extends SQLiteOpenHelper {
                 + BooksEntry.COLUMN_SUPPLIER + " TEXT, "
                 + BooksEntry.COLUMN_SUPPLIER_EMAIL + " TEXT);";
 
+
         db.execSQL(SQL_CREATE_BOOKS_TABLE);
-        Log.v(LOG_TAG, "S-a creat BAZA DE DATE");
     }
 
     @Override

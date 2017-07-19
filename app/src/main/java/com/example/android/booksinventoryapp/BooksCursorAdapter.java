@@ -45,8 +45,11 @@ public class BooksCursorAdapter extends CursorAdapter{
         String bookID = cursor.getString(idColumnIndex);
         String bookTitle = cursor.getString(titleColumnIndex);
         String bookAuthor = cursor.getString(authorColumnIndex);
-        String bookQuantity = cursor.getString(quantityColumnIndex);
-        String bookPrice = cursor.getString(priceColumnIndex);
+        int intBookQuantity = cursor.getInt(quantityColumnIndex);
+        double doubleBookPrice = cursor.getDouble(priceColumnIndex);
+
+        String bookQuantity = Integer.toString(intBookQuantity);
+        String bookPrice = Double.toString(doubleBookPrice);
 
         if (TextUtils.isEmpty(bookTitle)) {
             bookTitle = context.getString(R.string.unknown_title);
