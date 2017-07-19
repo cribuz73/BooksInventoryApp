@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="16dp"
+    tools:context="com.example.android.booksinventoryapp.MainActivity">
+
+
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="100dp"
+        android:src="@drawable/empty_shelf3"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/QuantityStyle"
+        android:text="@string/quantity"
+        android:gravity="end"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/quantity"
+        style="@style/QuantityStyle"
+        android:gravity="end"
+        android:text="10"/>
+
+</LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:text="@string/book_title"
+            style="@style/CategoryStyle"
+            />
+        <EditText
+            android:id="@+id/edit_book_title"
+            android:inputType="textCapWords"
+            style="@style/EditorFieldStyle" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:text="@string/book_author"
+            style="@style/CategoryStyle"
+            />
+        <EditText
+            android:id="@+id/edit_book_author"
+            android:inputType="textCapWords"
+            style="@style/EditorFieldStyle"
+            android:maxLines="2"
+            />
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:text="@string/book_publisher"
+            style="@style/CategoryStyle"
+            />
+        <EditText
+            android:id="@+id/edit_book_publisher"
+            android:inputType="textCapWords"
+            style="@style/EditorFieldStyle" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:text="@string/book_year"
+            style="@style/CategoryStyle"
+            />
+        <EditText
+            android:id="@+id/edit_book_year"
+            android:inputType="number"
+            android:maxLength="4"
+            style="@style/EditorFieldStyle" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:text="@string/book_price"
+            style="@style/CategoryStyle"
+            />
+        <EditText
+            android:id="@+id/edit_price"
+            android:inputType="numberDecimal"
+            style="@style/EditorFieldStyle" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:text="@string/book_supplier"
+            style="@style/CategoryStyle_Supplier"
+            />
+        <EditText
+            android:id="@+id/edit_book_supplier"
+            android:inputType="textCapWords"
+            style="@style/EditorFieldStyle_Supplier" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:text="@string/book_supplier_email"
+            style="@style/CategoryStyle_Supplier"
+            />
+        <EditText
+            android:id="@+id/edit_book_supplier_email"
+            android:inputType="textEmailAddress"
+            style="@style/EditorFieldStyle_Supplier" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="25dp">
+
+        <TextView
+            android:text="@string/adjust_quantity"
+            style="@style/CategoryStyle"
+            />
+        <Button
+            android:text="-"
+            style="@style/small_button" />
+
+        <EditText
+            android:id="@+id/adjust_quantity"
+            android:inputType="number"
+            android:layout_weight="0"
+            style="@style/small_button"
+            android:hint="1"/>
+
+        <Button
+            style="@style/small_button"
+            android:layout_weight="0"
+            android:text="+"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="10dp">
+
+        <TextView
+            android:text="@string/new_order"
+            style="@style/CategoryStyle"
+            />
+
+        <EditText
+            android:id="@+id/new_order"
+            android:inputType="number"
+            android:layout_weight="1"
+            style="@style/small_button"
+            android:hint="1"/>
+
+        <Button
+            style="@style/large_button"
+            android:layout_weight="0"
+            android:text="Order"/>
+    </LinearLayout>
+
+
+</LinearLayout>
+</ScrollView>

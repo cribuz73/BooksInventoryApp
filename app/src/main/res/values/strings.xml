@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">Books Inventory App</string>
+
+    <string name="empty_shelf">Add books on inventory !</string>
+
+    <string name="book_author">Author</string>
+    <string name="book_title">Title</string>
+    <string name="book_publisher">Publisher</string>
+    <string name="book_year">Year</string>
+    <string name="book_supplier_email">Supplier email</string>
+    <string name="book_supplier">Supplier</string>
+    <string name="quantity">Available quantity</string>
+    <string name="adjust_quantity">Adjust quantity</string>
+    <string name="new_order">New order</string>
+    <string name="book_price">Price</string>
+
+    <string name="Sale_button">Sale</string>
+//Menu strings //
+    <string name="Order_by">Order by</string>
+    <string name="Find">Find</string>
+
+    <string name="action_save">Save</string>
+    <string name="action_delete">Delete</string>
+
+    <string name="unknown_title">Unknown title</string>
+    <string name="unknown_author">Unknown_author</string>
+
+    <string name="editor_insert_failed">Error with saving book </string>
+    <string name="editor_insert_successful">Book saved</string>
+    <string name="editor_update_failed">Error with updating book</string>
+    <string name="editor_update_successful">Book updated</string>
+    <string name="editor_add_book_title">Add new book</string>
+    <string name="editor_edit_book_title">Edit a book</string>
+
+
+</resources>
