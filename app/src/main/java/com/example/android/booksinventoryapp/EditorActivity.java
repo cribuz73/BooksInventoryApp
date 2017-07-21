@@ -18,7 +18,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.android.booksinventoryapp.Data.BooksContract;
 import com.example.android.booksinventoryapp.Data.BooksContract.BooksEntry;
 
 /**
@@ -39,7 +38,6 @@ public class EditorActivity extends AppCompatActivity implements
     private EditText mSupplierText;
     private EditText mSupplierEmailText;
     private EditText mPriceText;
-    private EditText mQuantityText;
 
     private boolean mPetHasChanged = false;
 
@@ -86,7 +84,6 @@ public class EditorActivity extends AppCompatActivity implements
         mSupplierText = (EditText) findViewById(R.id.edit_book_supplier);
         mSupplierEmailText = (EditText) findViewById(R.id.edit_book_supplier_email);
         mPriceText = (EditText) findViewById(R.id.edit_price);
-        mQuantityText = (EditText) findViewById(R.id.adjust_quantity);
 
 
         mAuthorEditText.setOnTouchListener(mTouchListener);
@@ -96,7 +93,6 @@ public class EditorActivity extends AppCompatActivity implements
         mSupplierText.setOnTouchListener(mTouchListener);
         mSupplierEmailText.setOnTouchListener(mTouchListener);
         mPriceText.setOnTouchListener(mTouchListener);
-        mQuantityText.setOnTouchListener(mTouchListener);
 
     }
 
@@ -110,13 +106,13 @@ public class EditorActivity extends AppCompatActivity implements
         String supplierName = mSupplierText.getText().toString().trim();
         String supplierEmail = mSupplierEmailText.getText().toString().trim();
         String bookPriceString = mPriceText.getText().toString().trim();
-        String bookQuantityString = mQuantityText.getText().toString().trim();
+        //String bookQuantityString = mQuantityText.getText().toString().trim();
 
         // Check if this is supposed to be a new pet
         // and check if all the fields in the editor are blank
         if (mCurrentBookUri == null &&
-                TextUtils.isEmpty(authorName) && TextUtils.isEmpty(bookTitle) &&
-                TextUtils.isEmpty(bookPriceString) && TextUtils.isEmpty(bookQuantityString)) {
+            TextUtils.isEmpty(authorName) && TextUtils.isEmpty(bookTitle) &&
+               TextUtils.isEmpty(bookPriceString)) {
             // Since no fields were modified, we can return early without creating a new pet.
             // No need to create ContentValues and no need to do any ContentProvider operations.
             return;
@@ -125,25 +121,25 @@ public class EditorActivity extends AppCompatActivity implements
         // Create a ContentValues object where column names are the keys,
         // and pet attributes from the editor are the values.
         ContentValues values = new ContentValues();
-        values.put(BooksContract.BooksEntry.COLUMN_AUTHOR, authorName);
-        values.put(BooksContract.BooksEntry.COLUMN_TITLE, bookTitle);
-        values.put(BooksContract.BooksEntry.COLUMN_PUBLISHER, bookPublisher);
-        values.put(BooksContract.BooksEntry.COLUMN_YEAR, bookYear);
+        values.put(BooksEntry.COLUMN_AUTHOR, authorName);
+        values.put(BooksEntry.COLUMN_TITLE, bookTitle);
+        values.put(BooksEntry.COLUMN_PUBLISHER, bookPublisher);
+        values.put(BooksEntry.COLUMN_YEAR, bookYear);
         values.put(BooksEntry.COLUMN_SUPPLIER, supplierName);
         values.put(BooksEntry.COLUMN_SUPPLIER_EMAIL, supplierEmail);
         // If the weight is not provided by the user, don't try to parse the string into an
         // integer value. Use 0 by default.
-        double price = 0;
-        if (!TextUtils.isEmpty(bookPriceString)) {
+          double price = 0;
+           if (!TextUtils.isEmpty(bookPriceString)) {
             price = Double.parseDouble(bookPriceString);
-        }
-        values.put(BooksEntry.COLUMN_PRICE, price);
+            }
+              values.put(BooksEntry.COLUMN_PRICE, price);
 
-        int quantity = 0;
-        if (!TextUtils.isEmpty(bookQuantityString)) {
-            quantity = Integer.parseInt(bookQuantityString);
-        }
-        values.put(BooksEntry.COLUMN_QUANTITY, quantity);
+//        int quantity = 0;
+  //      if (!TextUtils.isEmpty(bookQuantityString)) {
+  //          quantity = Integer.parseInt(bookQuantityString);
+  //      }
+    //    values.put(BooksEntry.COLUMN_QUANTITY, quantity);
 
         // Determine if this is a new or existing pet by checking if mCurrentPetUri is null or not
         if (mCurrentBookUri == null) {
@@ -221,8 +217,7 @@ public class EditorActivity extends AppCompatActivity implements
                 BooksEntry.COLUMN_YEAR,
                 BooksEntry.COLUMN_SUPPLIER,
                 BooksEntry.COLUMN_SUPPLIER_EMAIL,
-                BooksEntry.COLUMN_PRICE,
-                BooksEntry.COLUMN_QUANTITY};
+                BooksEntry.COLUMN_PRICE};
 
 
         // This loader will execute the ContentProvider's query method on a background thread
@@ -243,7 +238,6 @@ public class EditorActivity extends AppCompatActivity implements
         // (This should be the only row in the cursor)
         if (cursor.moveToFirst()) {
             // Find the columns of pet attributes that we're interested in
-            int imageColumnIndex = cursor.getColumnIndex(BooksEntry.COLUMN_IMAGE);
             int titleColumnIndex = cursor.getColumnIndex(BooksEntry.COLUMN_TITLE);
             int authorColumnIndex = cursor.getColumnIndex(BooksEntry.COLUMN_AUTHOR);
             int publisherColumnIndex = cursor.getColumnIndex(BooksEntry.COLUMN_PUBLISHER);
@@ -251,7 +245,6 @@ public class EditorActivity extends AppCompatActivity implements
             int supplierColumnIndex = cursor.getColumnIndex(BooksEntry.COLUMN_SUPPLIER);
             int supplierEmailColumnIndex = cursor.getColumnIndex(BooksEntry.COLUMN_SUPPLIER_EMAIL);
             int priceColumnIndex = cursor.getColumnIndex(BooksEntry.COLUMN_PRICE);
-            int quantityColumnIndex = cursor.getColumnIndex(BooksEntry.COLUMN_QUANTITY);
 
             // Extract out the value from the Cursor for the given column index
             String title = cursor.getString(titleColumnIndex);
@@ -261,7 +254,7 @@ public class EditorActivity extends AppCompatActivity implements
             String supplier = cursor.getString(supplierColumnIndex);
             String supplierEmail = cursor.getString(supplierEmailColumnIndex);
             double price = cursor.getDouble(priceColumnIndex);
-            int quantity = cursor.getInt(quantityColumnIndex);
+
 
             // Update the views on the screen with the values from the database
 
@@ -273,7 +266,6 @@ public class EditorActivity extends AppCompatActivity implements
             mSupplierText.setText(supplier);
             mSupplierEmailText.setText(supplierEmail);
             mPriceText.setText(Double.toString(price));
-            mQuantityText.setText(Integer.toString(quantity));
         }
     }
     @Override
@@ -284,5 +276,7 @@ public class EditorActivity extends AppCompatActivity implements
         mYearEditText.setText("");
         mSupplierText.setText("");
         mSupplierEmailText.setText("");
+        mPriceText.setText("");
+
     }
 }

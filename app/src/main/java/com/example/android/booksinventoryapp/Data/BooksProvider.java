@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.android.booksinventoryapp.Data.BooksContract.BooksEntry;
 
@@ -96,33 +95,33 @@ public class BooksProvider extends ContentProvider {
     }
     private Uri insertBook(Uri uri, ContentValues values) {
 
-        String title = values.getAsString(BooksEntry.COLUMN_TITLE);
-        if (title == null) {
-            throw new IllegalArgumentException("Book requires a title");
-        }
+//        String title = values.getAsString(BooksEntry.COLUMN_TITLE);
+//        if (title == null) {
+ //           throw new IllegalArgumentException("Book requires a title");
+ //       }
 
-        String author = values.getAsString(BooksEntry.COLUMN_AUTHOR);
-        if (author == null) {
-            throw new IllegalArgumentException("Book requires an author");
-        }
+ //       String author = values.getAsString(BooksEntry.COLUMN_AUTHOR);
+ //       if (author == null) {
+ //           throw new IllegalArgumentException("Book requires an author");
+ //       }
 
-        Double price = values.getAsDouble(BooksEntry.COLUMN_PRICE);
-        if (price <= 0) {
-            throw new IllegalArgumentException("Insert a valid price");
-        }
+//        Double price = values.getAsDouble(BooksEntry.COLUMN_PRICE);
+ //       if (price <= 0) {
+  //          throw new IllegalArgumentException("Insert a valid price");
+   //     }
 
-        Integer quantity = values.getAsInteger(BooksEntry.COLUMN_QUANTITY);
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Insert a valid quantity");
-        }
+     //   Integer quantity = values.getAsInteger(BooksEntry.COLUMN_QUANTITY);
+     //   if (quantity <= 0) {
+      //      throw new IllegalArgumentException("Insert a valid quantity");
+       // }
 
-        String supplierEmail = values.getAsString(BooksEntry.COLUMN_SUPPLIER_EMAIL);
-        String supplierEmailValidation = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
-        if (supplierEmail.matches(supplierEmailValidation)) {
-            Toast.makeText(getContext(), "Valid email address", Toast.LENGTH_SHORT).show();
+       // String supplierEmail = values.getAsString(BooksEntry.COLUMN_SUPPLIER_EMAIL);
+       // String supplierEmailValidation = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+       // if (supplierEmail.matches(supplierEmailValidation)) {
+       //     Toast.makeText(getContext(), "Valid email address", Toast.LENGTH_SHORT).show();
 
-            throw new IllegalArgumentException("Insert a valid email address");
-        }
+         //   throw new IllegalArgumentException("Insert a valid email address");
+       // }
 
         // No need to check the breed, any value is valid (including null).
 

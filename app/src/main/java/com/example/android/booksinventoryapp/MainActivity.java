@@ -92,6 +92,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         values.put(BooksEntry.COLUMN_AUTHOR, "Buzatu Cristian");
         values.put(BooksEntry.COLUMN_PRICE, 80.55);
         values.put(BooksEntry.COLUMN_QUANTITY, 7);
+
+        Uri newUri = getContentResolver().insert(BooksEntry.CONTENT_URI, values);
+
     }
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
