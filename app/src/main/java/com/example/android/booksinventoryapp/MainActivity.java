@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         booksListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 
                 Intent intent = new Intent(MainActivity.this, EditorActivity.class);
                 Uri currentBookUri = ContentUris.withAppendedId(BooksEntry.CONTENT_URI, id);
@@ -63,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 startActivity(intent);
             }
         });
+
+
         getLoaderManager().initLoader(BOOKS_LOADER, null, this);
 
     }
@@ -94,6 +96,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         values.put(BooksEntry.COLUMN_QUANTITY, 7);
 
         Uri newUri = getContentResolver().insert(BooksEntry.CONTENT_URI, values);
+
+    }
+    private void sale (){
+        ContentValues values = new ContentValues();
+
+
 
     }
     @Override

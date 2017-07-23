@@ -31,6 +31,13 @@
     <string name="editor_update_successful">Book updated</string>
     <string name="editor_add_book_title">Add new book</string>
     <string name="editor_edit_book_title">Edit a book</string>
+    <string name="editor_valid_entries">Please insert more details</string>
 
+    <string name="delete_dialog_msg">Delete this book?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="editor_delete_book_successful">Book deleted</string>
+    <string name="editor_delete_book_failed">Error with deleting book</string>
 
 </resources>
