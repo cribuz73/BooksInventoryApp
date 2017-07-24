@@ -10,7 +10,11 @@
     <string name="book_supplier_email">Supplier email</string>
     <string name="book_supplier">Supplier</string>
     <string name="quantity">Available quantity</string>
-    <string name="adjust_quantity">Adjust quantity</string>
+    <string name="existing_quantity">Existing quantity</string>
+    <string name="quantity_adapter">quantity</string>
+
+
+    <string name="adjust_quantity">Update quantity</string>
     <string name="new_order">New order</string>
     <string name="book_price">Price</string>
 

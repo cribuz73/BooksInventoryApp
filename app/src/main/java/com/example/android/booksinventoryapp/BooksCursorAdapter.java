@@ -60,6 +60,8 @@ public class BooksCursorAdapter extends CursorAdapter{
         String bookQuantity = Integer.toString(intBookQuantity);
         String formattedBookPrice = new DecimalFormat("##,##0.00€").format(doubleBookPrice);
 
+        String formattedBookQuantity = String.format(context.getString(R.string.quantity_adapter)+ " :" + bookQuantity);
+
             if (TextUtils.isEmpty(bookTitle)) {
             bookTitle = context.getString(R.string.unknown_title);
         }
@@ -70,7 +72,7 @@ public class BooksCursorAdapter extends CursorAdapter{
         idTextView.setText(bookID);
         titleTextView.setText(bookTitle);
         authorTextView.setText(bookAuthor);
-        quantityTextView.setText(bookQuantity);
+        quantityTextView.setText(formattedBookQuantity);
         priceTextView.setText(formattedBookPrice);
 
         int itemIdIndex = cursor.getColumnIndex(BooksEntry._ID);

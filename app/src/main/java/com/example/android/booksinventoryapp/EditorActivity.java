@@ -14,7 +14,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -55,7 +56,6 @@ public class EditorActivity extends AppCompatActivity implements
     private EditText mPriceText;
     private EditText mQuantityText;
     private TextView mExistQuantityText;
-    private TextView mImageUri;
     private ImageView mBookImage;
 
     private boolean mPetHasChanged = false;
@@ -121,23 +121,22 @@ public class EditorActivity extends AppCompatActivity implements
         mPriceText.setOnTouchListener(mTouchListener);
 
 
-
         mBookImage.setOnClickListener(new View.OnClickListener() {
-    @Override
-    public void onClick(View v) {
-        Intent intent;
+            @Override
+            public void onClick(View v) {
+                Intent intent;
 
-        if (Build.VERSION.SDK_INT < 19) {
-            intent = new Intent(Intent.ACTION_GET_CONTENT);
-        } else {
-            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-        }
+                if (Build.VERSION.SDK_INT < 19) {
+                    intent = new Intent(Intent.ACTION_GET_CONTENT);
+                } else {
+                    intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                }
 
-        intent.setType("image/*");
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
-    }
-});
+                intent.setType("image/*");
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+            }
+        });
 
     }
 
@@ -155,7 +154,7 @@ public class EditorActivity extends AppCompatActivity implements
             if (resultData != null) {
                 imageUri = resultData.getData();
 
-       //         mImageUri.setText(imageUri.toString());
+                //         mImageUri.setText(imageUri.toString());
                 mBookImage.setImageBitmap(getBitmapFromUri(imageUri));
             }
         }
@@ -210,11 +209,11 @@ public class EditorActivity extends AppCompatActivity implements
             }
         }
     }
+
     private void saveBook() {
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
-
-        String image = imageUri.toString();
+        //   String image = imageUri.toString();
         String authorName = mAuthorEditText.getText().toString().trim();
         String bookTitle = mTitleEditText.getText().toString().trim();
         String bookPublisher = mPublisherText.getText().toString().trim();
@@ -224,7 +223,11 @@ public class EditorActivity extends AppCompatActivity implements
         String bookPriceString = mPriceText.getText().toString().trim();
         String bookQuantityString = mQuantityText.getText().toString().trim();
 
-
+        //       if (TextUtils.isEmpty(image)) {
+        //          mBookImage.requestFocus();
+        //          Toast.makeText(EditorActivity.this, "Image is required", Toast.LENGTH_SHORT).show();
+        //         return;
+        //     }
         // Check if this is supposed to be a new pet
         // and check if all the fields in the editor are blank
         if (TextUtils.isEmpty(authorName) || TextUtils.isEmpty(bookTitle) ||
@@ -238,7 +241,7 @@ public class EditorActivity extends AppCompatActivity implements
 
         ContentValues values = new ContentValues();
 
-        values.put(BooksEntry.COLUMN_IMAGE, image);
+        // values.put(BooksEntry.COLUMN_IMAGE, image);
         values.put(BooksEntry.COLUMN_AUTHOR, authorName);
         values.put(BooksEntry.COLUMN_TITLE, bookTitle);
         values.put(BooksEntry.COLUMN_PUBLISHER, bookPublisher);
@@ -246,6 +249,16 @@ public class EditorActivity extends AppCompatActivity implements
         values.put(BooksEntry.COLUMN_SUPPLIER, supplierName);
         values.put(BooksEntry.COLUMN_SUPPLIER_EMAIL, supplierEmail);
 
+        try {
+            String image = imageUri.toString();
+            if (image != null) {
+                values.put(BooksEntry.COLUMN_IMAGE, image);
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Log.e(LOG_TAG, "No image");
+
+        }
 
 
         double price = 0;
@@ -335,7 +348,7 @@ public class EditorActivity extends AppCompatActivity implements
                 BooksEntry.COLUMN_SUPPLIER,
                 BooksEntry.COLUMN_SUPPLIER_EMAIL,
                 BooksEntry.COLUMN_PRICE,
-                BooksEntry.COLUMN_QUANTITY };
+                BooksEntry.COLUMN_QUANTITY};
 
 
         // This loader will execute the ContentProvider's query method on a background thread
@@ -380,25 +393,22 @@ public class EditorActivity extends AppCompatActivity implements
             int quantity = cursor.getInt(quantityColumnIndex);
 
 
-            // Update the views on the screen with the values from the database
-
-      //      mBookImage.setImageBitmap(getBitmapFromUri(imageUri));
-
-      //      if (imageUri!= null) {
-        //        mBookImage.setImageBitmap(getBitmapFromUri(imageUri));
-       //               }
-
-
-            Bitmap bitmap = null;
           try {
               imageUri = Uri.parse(image);
-              bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
 
-          } catch (IOException e) {
-             e.printStackTrace();
+              ViewTreeObserver viewTreeObserver = mBookImage.getViewTreeObserver();
+
+              viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                  @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+                  public void onGlobalLayout() {
+                      mBookImage.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                      mBookImage.setImageBitmap(getBitmapFromUri(imageUri));
+                  }
+              });
+          } catch (NullPointerException e) {
+              e.printStackTrace();
               Log.e(LOG_TAG, "No image");
           }
-          mBookImage.setImageBitmap(bitmap);
 
             mTitleEditText.setText(title);
             mAuthorEditText.setText(author);
@@ -424,6 +434,7 @@ public class EditorActivity extends AppCompatActivity implements
         mExistQuantityText.setText("0");
 
     }
+
     private void showDeleteConfirmationDialog() {
         // Create an AlertDialog.Builder and set the message, and click listeners
         // for the postivie and negative buttons on the dialog.

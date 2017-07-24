@@ -162,21 +162,15 @@
             android:text="@string/adjust_quantity"
             style="@style/CategoryStyle"
             />
-        <Button
-            android:text="-"
-            style="@style/small_button" />
 
         <EditText
             android:id="@+id/adjust_quantity"
             android:inputType="number"
-            android:layout_weight="0"
+            android:layout_weight="1"
             style="@style/small_button"
-            android:hint="1"/>
+            android:hint="@string/existing_quantity"/>
 
-        <Button
-            style="@style/small_button"
-            android:layout_weight="0"
-            android:text="+"/>
+
     </LinearLayout>
 
     <LinearLayout
