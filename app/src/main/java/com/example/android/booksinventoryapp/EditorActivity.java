@@ -56,6 +56,7 @@ public class EditorActivity extends AppCompatActivity implements
     private EditText mSupplierEmailText;
     private EditText mPriceText;
     private EditText mQuantityText;
+    private EditText mOrderText;
     private TextView mExistQuantityText;
     private ImageView mBookImage;
 
@@ -77,26 +78,15 @@ public class EditorActivity extends AppCompatActivity implements
 
         setContentView(R.layout.editor_activity);
 
-// Examine the intent that was used to launch this activity,
-        // in order to figure out if we're creating a new pet or editing an existing one.
         Intent intent = getIntent();
         mCurrentBookUri = intent.getData();
 
-        // If the intent DOES NOT contain a pet content URI, then we know that we are
-        // creating a new pet.
-        if (mCurrentBookUri == null) {
-            // This is a new pet, so change the app bar to say "Add a Pet"
-            setTitle(getString(R.string.editor_add_book_title));
 
-            // Invalidate the options menu, so the "Delete" menu option can be hidden.
-            // (It doesn't make sense to delete a pet that hasn't been created yet.)
+        if (mCurrentBookUri == null) {
+            setTitle(getString(R.string.editor_add_book_title));
             invalidateOptionsMenu();
         } else {
-            // Otherwise this is an existing pet, so change app bar to say "Edit Pet"
             setTitle(getString(R.string.editor_edit_book_title));
-
-            // Initialize a loader to read the pet data from the database
-            // and display the current values in the editor
             getLoaderManager().initLoader(EXISTING_BOOK_LOADER, null, this);
         }
 
@@ -108,6 +98,7 @@ public class EditorActivity extends AppCompatActivity implements
         mSupplierEmailText = (EditText) findViewById(R.id.edit_book_supplier_email);
         mPriceText = (EditText) findViewById(R.id.edit_price);
         mQuantityText = (EditText) findViewById(R.id.adjust_quantity);
+        mOrderText = (EditText) findViewById(R.id.new_order);
         mExistQuantityText = (TextView) findViewById(R.id.existing_quantity);
         mExistQuantityText.setText("0");
         mBookImage = (ImageView) findViewById(R.id.book_image);
@@ -143,12 +134,18 @@ public class EditorActivity extends AppCompatActivity implements
         orderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("message/rfc822");
-                intent.setData(Uri.parse("mailto:"));
-                intent.putExtra(Intent.EXTRA_EMAIL, "order@gmail.com");
-                intent.putExtra(Intent.EXTRA_SUBJECT, "ssdsd");
-                intent.putExtra(Intent.EXTRA_STREAM, "Please send the next batch of order");
+                String order = mOrderText.getText().toString().trim();
+                String email = mSupplierEmailText.getText().toString().trim();
+                String author = mAuthorEditText.getText().toString().trim();
+                String title = mTitleEditText.getText().toString().trim();
+
+                String[] emails = {email};
+                Intent intent = new Intent(Intent.ACTION_SENDTO);
+                intent.setData(Uri.parse("mailto:")); // only email apps should handle this
+                intent.putExtra(Intent.EXTRA_EMAIL, emails);
+                intent.putExtra(Intent.EXTRA_SUBJECT, "New order");
+                intent.putExtra(Intent.EXTRA_TEXT, "Please send me a new quantity of " + order + " books from " + title + " by " + author + "\nThank you !");
+
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivity(intent);
                 }
@@ -158,19 +155,11 @@ public class EditorActivity extends AppCompatActivity implements
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
-        // The ACTION_OPEN_DOCUMENT intent was sent with the request code READ_REQUEST_CODE.
-        // If the request code seen here doesn't match, it's the response to some other intent,
-        // and the below code shouldn't run at all.
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
-            // The document selected by the user won't be returned in the intent.
-            // Instead, a URI to that document will be contained in the return intent
-            // provided to this method as a parameter.  Pull that uri using "resultData.getData()"
 
             if (resultData != null) {
                 imageUri = resultData.getData();
-
-                //         mImageUri.setText(imageUri.toString());
                 mBookImage.setImageBitmap(getBitmapFromUri(imageUri));
             }
         }
@@ -181,7 +170,6 @@ public class EditorActivity extends AppCompatActivity implements
         if (uri == null || uri.toString().isEmpty())
             return null;
 
-        // Get the dimensions of the View
         int targetW = mBookImage.getWidth();
         int targetH = mBookImage.getHeight();
 
@@ -189,7 +177,6 @@ public class EditorActivity extends AppCompatActivity implements
         try {
             input = this.getContentResolver().openInputStream(uri);
 
-            // Get the dimensions of the bitmap
             BitmapFactory.Options bmOptions = new BitmapFactory.Options();
             bmOptions.inJustDecodeBounds = true;
             BitmapFactory.decodeStream(input, null, bmOptions);
@@ -198,10 +185,8 @@ public class EditorActivity extends AppCompatActivity implements
             int photoW = bmOptions.outWidth;
             int photoH = bmOptions.outHeight;
 
-            // Determine how much to scale down the image
             int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
 
-            // Decode the image file into a Bitmap sized to fill the View
             bmOptions.inJustDecodeBounds = false;
             bmOptions.inSampleSize = scaleFactor;
             bmOptions.inPurgeable = true;
@@ -227,9 +212,7 @@ public class EditorActivity extends AppCompatActivity implements
     }
 
     private void saveBook() {
-        // Read from input fields
-        // Use trim to eliminate leading or trailing white space
-        //   String image = imageUri.toString();
+
         String authorName = mAuthorEditText.getText().toString().trim();
         String bookTitle = mTitleEditText.getText().toString().trim();
         String bookPublisher = mPublisherText.getText().toString().trim();
@@ -239,25 +222,25 @@ public class EditorActivity extends AppCompatActivity implements
         String bookPriceString = mPriceText.getText().toString().trim();
         String bookQuantityString = mQuantityText.getText().toString().trim();
 
-        //       if (TextUtils.isEmpty(image)) {
-        //          mBookImage.requestFocus();
-        //          Toast.makeText(EditorActivity.this, "Image is required", Toast.LENGTH_SHORT).show();
-        //         return;
-        //     }
-        // Check if this is supposed to be a new pet
-        // and check if all the fields in the editor are blank
-        if (TextUtils.isEmpty(authorName) || TextUtils.isEmpty(bookTitle) ||
-                TextUtils.isEmpty(bookPriceString)) {
-            // Since no fields were modified, we can return early without creating a new pet.
-            // No need to create ContentValues and no need to do any ContentProvider operations.
-            Toast.makeText(this, getString(R.string.editor_valid_entries),
+        if (TextUtils.isEmpty(authorName)) {
+            Toast.makeText(this, getString(R.string.editor_valid_author),
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (TextUtils.isEmpty(bookTitle)) {
+            Toast.makeText(this, getString(R.string.editor_valid_title),
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(bookPriceString)) {
+            Toast.makeText(this, getString(R.string.editor_valid_price),
                     Toast.LENGTH_SHORT).show();
             return;
         }
 
         ContentValues values = new ContentValues();
 
-        // values.put(BooksEntry.COLUMN_IMAGE, image);
         values.put(BooksEntry.COLUMN_AUTHOR, authorName);
         values.put(BooksEntry.COLUMN_TITLE, bookTitle);
         values.put(BooksEntry.COLUMN_PUBLISHER, bookPublisher);
@@ -273,16 +256,13 @@ public class EditorActivity extends AppCompatActivity implements
         } catch (NullPointerException e) {
             e.printStackTrace();
             Log.e(LOG_TAG, "No image");
-
         }
-
 
         double price = 0;
         if (!TextUtils.isEmpty(bookPriceString)) {
             price = Double.parseDouble(bookPriceString);
         }
         values.put(BooksEntry.COLUMN_PRICE, price);
-
 
         int quantity = 0;
         if (!TextUtils.isEmpty(bookQuantityString)) {
@@ -303,19 +283,13 @@ public class EditorActivity extends AppCompatActivity implements
                         Toast.LENGTH_SHORT).show();
             }
         } else {
-            // Otherwise this is an EXISTING pet, so update the pet with content URI: mCurrentPetUri
-            // and pass in the new ContentValues. Pass in null for the selection and selection args
-            // because mCurrentPetUri will already identify the correct row in the database that
-            // we want to modify.
+
             int rowsAffected = getContentResolver().update(mCurrentBookUri, values, null, null);
 
-            // Show a toast message depending on whether or not the update was successful.
             if (rowsAffected == 0) {
-                // If no rows were affected, then there was an error with the update.
                 Toast.makeText(this, getString(R.string.editor_update_failed),
                         Toast.LENGTH_SHORT).show();
             } else {
-                // Otherwise, the update was successful and we can display a toast.
                 Toast.makeText(this, getString(R.string.editor_update_successful),
                         Toast.LENGTH_SHORT).show();
             }
@@ -332,20 +306,14 @@ public class EditorActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-            // Respond to a click on the "Save" menu option
             case R.id.action_save:
-                //Save pets to database;
                 saveBook();
-                // Finish editor activity;
                 finish();
                 return true;
-            // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
                 showDeleteConfirmationDialog();
                 return true;
-            // Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
-                // Navigate back to parent activity (CatalogActivity)
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
         }
@@ -367,13 +335,12 @@ public class EditorActivity extends AppCompatActivity implements
                 BooksEntry.COLUMN_QUANTITY};
 
 
-        // This loader will execute the ContentProvider's query method on a background thread
-        return new CursorLoader(this,   // Parent activity context
-                mCurrentBookUri,         // Query the content URI for the current pet
-                projection,             // Columns to include in the resulting Cursor
-                null,                   // No selection clause
-                null,                   // No selection arguments
-                null);                  // Default sort order    }
+        return new CursorLoader(this,
+                mCurrentBookUri,
+                projection,
+                null,
+                null,
+                null);
     }
 
     @Override
@@ -381,11 +348,7 @@ public class EditorActivity extends AppCompatActivity implements
         if (cursor == null || cursor.getCount() < 1) {
             return;
         }
-
-        // Proceed with moving to the first row of the cursor and reading data from it
-        // (This should be the only row in the cursor)
         if (cursor.moveToFirst()) {
-            // Find the columns of pet attributes that we're interested in
             int imageColumnIndex = cursor.getColumnIndex(BooksEntry.COLUMN_IMAGE);
             int titleColumnIndex = cursor.getColumnIndex(BooksEntry.COLUMN_TITLE);
             int authorColumnIndex = cursor.getColumnIndex(BooksEntry.COLUMN_AUTHOR);
@@ -397,7 +360,6 @@ public class EditorActivity extends AppCompatActivity implements
             int quantityColumnIndex = cursor.getColumnIndex(BooksEntry.COLUMN_QUANTITY);
 
 
-            // Extract out the value from the Cursor for the given column index
             String image = cursor.getString(imageColumnIndex);
             String title = cursor.getString(titleColumnIndex);
             String author = cursor.getString(authorColumnIndex);
@@ -409,22 +371,22 @@ public class EditorActivity extends AppCompatActivity implements
             int quantity = cursor.getInt(quantityColumnIndex);
 
 
-          try {
-              imageUri = Uri.parse(image);
+            try {
+                imageUri = Uri.parse(image);
 
-              ViewTreeObserver viewTreeObserver = mBookImage.getViewTreeObserver();
+                ViewTreeObserver viewTreeObserver = mBookImage.getViewTreeObserver();
 
-              viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                  @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-                  public void onGlobalLayout() {
-                      mBookImage.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                      mBookImage.setImageBitmap(getBitmapFromUri(imageUri));
-                  }
-              });
-          } catch (NullPointerException e) {
-              e.printStackTrace();
-              Log.e(LOG_TAG, "No image");
-          }
+                viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+                    public void onGlobalLayout() {
+                        mBookImage.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        mBookImage.setImageBitmap(getBitmapFromUri(imageUri));
+                    }
+                });
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+                Log.e(LOG_TAG, "No image");
+            }
 
             mTitleEditText.setText(title);
             mAuthorEditText.setText(author);
@@ -452,57 +414,42 @@ public class EditorActivity extends AppCompatActivity implements
     }
 
     private void showDeleteConfirmationDialog() {
-        // Create an AlertDialog.Builder and set the message, and click listeners
-        // for the postivie and negative buttons on the dialog.
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.delete_dialog_msg);
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Delete" button, so delete the pet.
                 deleteBook();
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Cancel" button, so dismiss the dialog
-                // and continue editing the pet.
+
                 if (dialog != null) {
                     dialog.dismiss();
                 }
             }
         });
 
-        // Create and show the AlertDialog
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
 
     private void deleteBook() {
-        // Only perform the delete if this is an existing pet.
         if (mCurrentBookUri != null) {
-            // Call the ContentResolver to delete the pet at the given content URI.
-            // Pass in null for the selection and selection args because the mCurrentPetUri
-            // content URI already identifies the pet that we want.
+
             int rowsDeleted = getContentResolver().delete(mCurrentBookUri, null, null);
 
-            // Show a toast message depending on whether or not the delete was successful.
             if (rowsDeleted == 0) {
-                // If no rows were deleted, then there was an error with the delete.
                 Toast.makeText(this, getString(R.string.editor_delete_book_failed),
                         Toast.LENGTH_SHORT).show();
             } else {
-                // Otherwise, the delete was successful and we can display a toast.
                 Toast.makeText(this, getString(R.string.editor_delete_book_successful),
                         Toast.LENGTH_SHORT).show();
             }
         }
 
-
-
-        // Close the activity
         finish();
     }
-
-
 
 }

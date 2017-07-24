@@ -21,7 +21,7 @@
     <string name="Sale_button">Sale</string>
 //Menu strings //
     <string name="Order_by">Order by</string>
-    <string name="Find">Find</string>
+    <string name="Insert_dummy">Insert dummy data</string>
 
     <string name="action_save">Save</string>
     <string name="action_delete">Delete</string>
@@ -36,6 +36,9 @@
     <string name="editor_add_book_title">Add new book</string>
     <string name="editor_edit_book_title">Edit a book</string>
     <string name="editor_valid_entries">Please insert more details</string>
+    <string name="editor_valid_title">Please insert the book title</string>
+    <string name="editor_valid_author">Please insert the book author</string>
+    <string name="editor_valid_price">Please insert the book price</string>
 
     <string name="delete_dialog_msg">Delete this book?</string>
     <string name="delete">Delete</string>

@@ -20,7 +20,7 @@ import android.widget.ListView;
 
 import com.example.android.booksinventoryapp.Data.BooksContract.BooksEntry;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int BOOKS_LOADER = 0;
 
@@ -80,30 +80,24 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         int id = item.getItemId();
 
-        if (id == R.id.action_find) {
-        insertBook();
+        if (id == R.id.action_insert_dummy) {
+            insertBook();
         }
 
         return super.onOptionsItemSelected(item);
     }
+
     private void insertBook() {
-        // Create a ContentValues object where column names are the keys,
-        // and Toto's pet attributes are the values.
+
         ContentValues values = new ContentValues();
-        values.put(BooksEntry.COLUMN_TITLE, "Prima Carte");
+        values.put(BooksEntry.COLUMN_TITLE, "First Book");
         values.put(BooksEntry.COLUMN_AUTHOR, "Buzatu Cristian");
         values.put(BooksEntry.COLUMN_PRICE, 80.55);
         values.put(BooksEntry.COLUMN_QUANTITY, 7);
 
         Uri newUri = getContentResolver().insert(BooksEntry.CONTENT_URI, values);
-
     }
-    private void sale (){
-        ContentValues values = new ContentValues();
 
-
-
-    }
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
 
@@ -121,9 +115,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 null,
                 null);
     }
+
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-            mCursorAdapter.swapCursor(cursor);
+        mCursorAdapter.swapCursor(cursor);
     }
 
     @Override

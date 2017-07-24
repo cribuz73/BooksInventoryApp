@@ -8,10 +8,11 @@ import android.provider.BaseColumns;
  * Created by Cristi on 7/17/2017.
  */
 
-public final class BooksContract  {
+public final class BooksContract {
     public static final String LOG_TAG = BooksContract.class.getSimpleName();
 
-    private BooksContract () {}
+    private BooksContract() {
+    }
 
     public static final String CONTENT_AUTHORITY = "com.example.android.booksinventoryapp";
 

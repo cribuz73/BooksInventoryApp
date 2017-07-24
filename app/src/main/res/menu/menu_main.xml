@@ -2,14 +2,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.android.booksinventoryapp.MainActivity">
+
     <item
-        android:id="@+id/action_order"
+        android:id="@+id/action_insert_dummy"
         android:orderInCategory="100"
-        android:title="@string/Order_by"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_find"
-        android:orderInCategory="100"
-        android:title="@string/Find"
+        android:title="@string/Insert_dummy"
         app:showAsAction="never" />
 </menu>

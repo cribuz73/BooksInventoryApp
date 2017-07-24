@@ -22,7 +22,7 @@ import java.text.DecimalFormat;
  * Created by Cristi on 7/17/2017.
  */
 
-public class BooksCursorAdapter extends CursorAdapter{
+public class BooksCursorAdapter extends CursorAdapter {
 
     public BooksCursorAdapter(Context context, Cursor c) {
         super(context, c, 0 /* flags */);
@@ -42,7 +42,7 @@ public class BooksCursorAdapter extends CursorAdapter{
         TextView authorTextView = (TextView) view.findViewById(R.id.book_author);
         TextView quantityTextView = (TextView) view.findViewById(R.id.book_quantity);
         TextView priceTextView = (TextView) view.findViewById(R.id.book_price);
-        final Button saleButton = (Button)view.findViewById(R.id.saleButton);
+        final Button saleButton = (Button) view.findViewById(R.id.saleButton);
 
 
         int idColumnIndex = cursor.getColumnIndex(BooksEntry._ID);
@@ -51,7 +51,7 @@ public class BooksCursorAdapter extends CursorAdapter{
         int quantityColumnIndex = cursor.getColumnIndex(BooksEntry.COLUMN_QUANTITY);
         int priceColumnIndex = cursor.getColumnIndex(BooksEntry.COLUMN_PRICE);
 
-       final String bookID = cursor.getString(idColumnIndex);
+        final String bookID = cursor.getString(idColumnIndex);
         String bookTitle = cursor.getString(titleColumnIndex);
         String bookAuthor = cursor.getString(authorColumnIndex);
         final int intBookQuantity = cursor.getInt(quantityColumnIndex);
@@ -60,9 +60,9 @@ public class BooksCursorAdapter extends CursorAdapter{
         String bookQuantity = Integer.toString(intBookQuantity);
         String formattedBookPrice = new DecimalFormat("##,##0.00€").format(doubleBookPrice);
 
-        String formattedBookQuantity = String.format(context.getString(R.string.quantity_adapter)+ " :" + bookQuantity);
+        String formattedBookQuantity = String.format(context.getString(R.string.quantity_adapter) + " :" + bookQuantity);
 
-            if (TextUtils.isEmpty(bookTitle)) {
+        if (TextUtils.isEmpty(bookTitle)) {
             bookTitle = context.getString(R.string.unknown_title);
         }
 
@@ -98,7 +98,6 @@ public class BooksCursorAdapter extends CursorAdapter{
         });
 
     }
-
 
 
 }

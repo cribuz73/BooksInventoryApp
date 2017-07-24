@@ -98,108 +98,80 @@ public class BooksProvider extends ContentProvider {
     private Uri insertBook(Uri uri, ContentValues values) {
 
 
-        // String supplierEmail = values.getAsString(BooksEntry.COLUMN_SUPPLIER_EMAIL);
-        // String supplierEmailValidation = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
-        // if (supplierEmail.matches(supplierEmailValidation)) {
-        //     Toast.makeText(getContext(), "Valid email address", Toast.LENGTH_SHORT).show();
-
-        //   throw new IllegalArgumentException("Insert a valid email address");
-        // }
-
-        // No need to check the breed, any value is valid (including null).
-
-        // Get writeable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
-        // Insert the new pet with the given values
         long id = database.insert(BooksEntry.TABLE_NAME, null, values);
-        // If the ID is -1, then the insertion failed. Log an error and return null.
         if (id == -1) {
             Log.e(LOG_TAG, "Failed to insert row for " + uri);
             return null;
         }
 
-        // Notify all listeners that the data has changed for the pet content URI
         getContext().getContentResolver().notifyChange(uri, null);
 
-        // Return the new URI with the ID (of the newly inserted row) appended at the end
         return ContentUris.withAppendedId(uri, id);
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
 
-    SQLiteDatabase database = mDbHelper.getWritableDatabase();
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
-    // Track the number of rows that were deleted
-    int rowsDeleted;
+        int rowsDeleted;
 
-    final int match = sUriMatcher.match(uri);
-        switch(match)
+        final int match = sUriMatcher.match(uri);
+        switch (match)
 
-    {
-        case BOOKS:
-            // Delete all rows that match the selection and selection args
-            rowsDeleted = database.delete(BooksEntry.TABLE_NAME, selection, selectionArgs);
-            break;
-        case BOOK_ID:
-            // Delete a single row given by the ID in the URI
-            selection = BooksEntry._ID + "=?";
-            selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-            rowsDeleted = database.delete(BooksEntry.TABLE_NAME, selection, selectionArgs);
-            break;
-        default:
-            throw new IllegalArgumentException("Deletion is not supported for " + uri);
-    }
+        {
+            case BOOKS:
+                rowsDeleted = database.delete(BooksEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            case BOOK_ID:
+                selection = BooksEntry._ID + "=?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                rowsDeleted = database.delete(BooksEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            default:
+                throw new IllegalArgumentException("Deletion is not supported for " + uri);
+        }
 
-    // If 1 or more rows were deleted, then notify all listeners that the data at the
-    // given URI has changed
-        if(rowsDeleted !=0)
 
-    {
-        getContext().getContentResolver().notifyChange(uri, null);
-    }
+        if (rowsDeleted != 0)
 
-    // Return the number of rows deleted
+        {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
         return rowsDeleted;
-}
+    }
+
     @Override
-    public int update(Uri uri, ContentValues contentValues, String selection,String[] selectionArgs) {
+    public int update(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case BOOKS:
                 return updateBook(uri, contentValues, selection, selectionArgs);
             case BOOK_ID:
-                // For the PET_ID code, extract out the ID from the URI,
-                // so we know which row to update. Selection will be "_id=?" and selection
-                // arguments will be a String array containing the actual ID.
                 selection = BooksEntry._ID + "=?";
-                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 return updateBook(uri, contentValues, selection, selectionArgs);
             default:
                 throw new IllegalArgumentException("Update is not supported for " + uri);
         }
     }
+
     private int updateBook(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
 
-        // If there are no values to update, then don't try to update the database
         if (values.size() == 0) {
             return 0;
         }
-
-        // Otherwise, get writeable database to update the data
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
-        // Perform the update on the database and get the number of rows affected
         int rowsUpdated = database.update(BooksEntry.TABLE_NAME, values, selection, selectionArgs);
 
-        // If 1 or more rows were updated, then notify all listeners that the data at the
-        // given URI has changed
+
         if (rowsUpdated != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
-
-        // Return the number of rows updated
         return rowsUpdated;
     }
 }
