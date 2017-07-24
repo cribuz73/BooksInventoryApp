@@ -14,6 +14,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -108,6 +109,7 @@ public class EditorActivity extends AppCompatActivity implements
         mQuantityText = (EditText) findViewById(R.id.adjust_quantity);
         mExistQuantityText = (TextView) findViewById(R.id.existing_quantity);
         mExistQuantityText.setText("0");
+        mBookImage = (ImageView) findViewById(R.id.book_image);
 
 
         mAuthorEditText.setOnTouchListener(mTouchListener);
@@ -119,7 +121,6 @@ public class EditorActivity extends AppCompatActivity implements
         mPriceText.setOnTouchListener(mTouchListener);
 
 
-        ImageView mBookImage = (ImageView) findViewById(R.id.book_image);
 
         mBookImage.setOnClickListener(new View.OnClickListener() {
     @Override
@@ -154,7 +155,7 @@ public class EditorActivity extends AppCompatActivity implements
             if (resultData != null) {
                 imageUri = resultData.getData();
 
-                mImageUri.setText(imageUri.toString());
+       //         mImageUri.setText(imageUri.toString());
                 mBookImage.setImageBitmap(getBitmapFromUri(imageUri));
             }
         }
@@ -212,7 +213,8 @@ public class EditorActivity extends AppCompatActivity implements
     private void saveBook() {
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
-        String imageUri = mImageUri.getText().toString();
+
+        String image = imageUri.toString();
         String authorName = mAuthorEditText.getText().toString().trim();
         String bookTitle = mTitleEditText.getText().toString().trim();
         String bookPublisher = mPublisherText.getText().toString().trim();
@@ -221,6 +223,7 @@ public class EditorActivity extends AppCompatActivity implements
         String supplierEmail = mSupplierEmailText.getText().toString().trim();
         String bookPriceString = mPriceText.getText().toString().trim();
         String bookQuantityString = mQuantityText.getText().toString().trim();
+
 
         // Check if this is supposed to be a new pet
         // and check if all the fields in the editor are blank
@@ -234,13 +237,16 @@ public class EditorActivity extends AppCompatActivity implements
         }
 
         ContentValues values = new ContentValues();
-        values.put(BooksEntry.COLUMN_IMAGE, imageUri);
+
+        values.put(BooksEntry.COLUMN_IMAGE, image);
         values.put(BooksEntry.COLUMN_AUTHOR, authorName);
         values.put(BooksEntry.COLUMN_TITLE, bookTitle);
         values.put(BooksEntry.COLUMN_PUBLISHER, bookPublisher);
         values.put(BooksEntry.COLUMN_YEAR, bookYear);
         values.put(BooksEntry.COLUMN_SUPPLIER, supplierName);
         values.put(BooksEntry.COLUMN_SUPPLIER_EMAIL, supplierEmail);
+
+
 
         double price = 0;
         if (!TextUtils.isEmpty(bookPriceString)) {
@@ -376,7 +382,24 @@ public class EditorActivity extends AppCompatActivity implements
 
             // Update the views on the screen with the values from the database
 
-            mImageUri.setText(image);
+      //      mBookImage.setImageBitmap(getBitmapFromUri(imageUri));
+
+      //      if (imageUri!= null) {
+        //        mBookImage.setImageBitmap(getBitmapFromUri(imageUri));
+       //               }
+
+
+            Bitmap bitmap = null;
+          try {
+              imageUri = Uri.parse(image);
+              bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+
+          } catch (IOException e) {
+             e.printStackTrace();
+              Log.e(LOG_TAG, "No image");
+          }
+          mBookImage.setImageBitmap(bitmap);
+
             mTitleEditText.setText(title);
             mAuthorEditText.setText(author);
             mPublisherText.setText(publisher);
@@ -390,7 +413,6 @@ public class EditorActivity extends AppCompatActivity implements
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mImageUri.setText("");
         mTitleEditText.setText("");
         mAuthorEditText.setText("");
         mPublisherText.setText("");
