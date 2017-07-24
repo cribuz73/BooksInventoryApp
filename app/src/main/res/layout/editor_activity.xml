@@ -194,7 +194,9 @@
         <Button
             style="@style/large_button"
             android:layout_weight="0"
-            android:text="Order"/>
+            android:text="Order"
+            android:id="@+id/order"
+            />
     </LinearLayout>
 
 

@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -138,6 +139,21 @@ public class EditorActivity extends AppCompatActivity implements
             }
         });
 
+        final Button orderButton = (Button) findViewById(R.id.order);
+        orderButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("message/rfc822");
+                intent.setData(Uri.parse("mailto:"));
+                intent.putExtra(Intent.EXTRA_EMAIL, "order@gmail.com");
+                intent.putExtra(Intent.EXTRA_SUBJECT, "ssdsd");
+                intent.putExtra(Intent.EXTRA_STREAM, "Please send the next batch of order");
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
+                }
+            }
+        });
     }
 
     @Override
@@ -481,9 +497,12 @@ public class EditorActivity extends AppCompatActivity implements
             }
         }
 
+
+
         // Close the activity
         finish();
     }
+
 
 
 }
