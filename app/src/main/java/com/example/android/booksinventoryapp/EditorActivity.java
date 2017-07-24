@@ -1,5 +1,6 @@
 package com.example.android.booksinventoryapp;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentValues;
@@ -8,20 +9,29 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.booksinventoryapp.Data.BooksContract.BooksEntry;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created by Cristi on 7/17/2017.
@@ -33,6 +43,7 @@ public class EditorActivity extends AppCompatActivity implements
     private static final int EXISTING_BOOK_LOADER = 0;
 
     private Uri mCurrentBookUri;
+    private Uri imageUri;
 
     private EditText mAuthorEditText;
     private EditText mTitleEditText;
@@ -43,8 +54,12 @@ public class EditorActivity extends AppCompatActivity implements
     private EditText mPriceText;
     private EditText mQuantityText;
     private TextView mExistQuantityText;
+    private TextView mImageUri;
+    private ImageView mBookImage;
 
     private boolean mPetHasChanged = false;
+    static final int PICK_IMAGE_REQUEST = 1;
+    public static final String LOG_TAG = EditorActivity.class.getSimpleName();
 
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         @Override
@@ -103,11 +118,101 @@ public class EditorActivity extends AppCompatActivity implements
         mSupplierEmailText.setOnTouchListener(mTouchListener);
         mPriceText.setOnTouchListener(mTouchListener);
 
+
+        ImageView mBookImage = (ImageView) findViewById(R.id.book_image);
+
+        mBookImage.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+        Intent intent;
+
+        if (Build.VERSION.SDK_INT < 19) {
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
+        } else {
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+        }
+
+        intent.setType("image/*");
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+    }
+});
+
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        // The ACTION_OPEN_DOCUMENT intent was sent with the request code READ_REQUEST_CODE.
+        // If the request code seen here doesn't match, it's the response to some other intent,
+        // and the below code shouldn't run at all.
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
+            // The document selected by the user won't be returned in the intent.
+            // Instead, a URI to that document will be contained in the return intent
+            // provided to this method as a parameter.  Pull that uri using "resultData.getData()"
+
+            if (resultData != null) {
+                imageUri = resultData.getData();
+
+                mImageUri.setText(imageUri.toString());
+                mBookImage.setImageBitmap(getBitmapFromUri(imageUri));
+            }
+        }
+    }
+
+    public Bitmap getBitmapFromUri(Uri uri) {
+
+        if (uri == null || uri.toString().isEmpty())
+            return null;
+
+        // Get the dimensions of the View
+        int targetW = mBookImage.getWidth();
+        int targetH = mBookImage.getHeight();
+
+        InputStream input = null;
+        try {
+            input = this.getContentResolver().openInputStream(uri);
+
+            // Get the dimensions of the bitmap
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            bmOptions.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(input, null, bmOptions);
+            input.close();
+
+            int photoW = bmOptions.outWidth;
+            int photoH = bmOptions.outHeight;
+
+            // Determine how much to scale down the image
+            int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
+
+            // Decode the image file into a Bitmap sized to fill the View
+            bmOptions.inJustDecodeBounds = false;
+            bmOptions.inSampleSize = scaleFactor;
+            bmOptions.inPurgeable = true;
+
+            input = this.getContentResolver().openInputStream(uri);
+            Bitmap bitmap = BitmapFactory.decodeStream(input, null, bmOptions);
+            input.close();
+            return bitmap;
+
+        } catch (FileNotFoundException fne) {
+            Log.e(LOG_TAG, "Failed to load image.", fne);
+            return null;
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Failed to load image.", e);
+            return null;
+        } finally {
+            try {
+                input.close();
+            } catch (IOException ioe) {
+
+            }
+        }
+    }
     private void saveBook() {
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
+        String imageUri = mImageUri.getText().toString();
         String authorName = mAuthorEditText.getText().toString().trim();
         String bookTitle = mTitleEditText.getText().toString().trim();
         String bookPublisher = mPublisherText.getText().toString().trim();
@@ -129,6 +234,7 @@ public class EditorActivity extends AppCompatActivity implements
         }
 
         ContentValues values = new ContentValues();
+        values.put(BooksEntry.COLUMN_IMAGE, imageUri);
         values.put(BooksEntry.COLUMN_AUTHOR, authorName);
         values.put(BooksEntry.COLUMN_TITLE, bookTitle);
         values.put(BooksEntry.COLUMN_PUBLISHER, bookPublisher);
@@ -245,6 +351,7 @@ public class EditorActivity extends AppCompatActivity implements
         // (This should be the only row in the cursor)
         if (cursor.moveToFirst()) {
             // Find the columns of pet attributes that we're interested in
+            int imageColumnIndex = cursor.getColumnIndex(BooksEntry.COLUMN_IMAGE);
             int titleColumnIndex = cursor.getColumnIndex(BooksEntry.COLUMN_TITLE);
             int authorColumnIndex = cursor.getColumnIndex(BooksEntry.COLUMN_AUTHOR);
             int publisherColumnIndex = cursor.getColumnIndex(BooksEntry.COLUMN_PUBLISHER);
@@ -256,6 +363,7 @@ public class EditorActivity extends AppCompatActivity implements
 
 
             // Extract out the value from the Cursor for the given column index
+            String image = cursor.getString(imageColumnIndex);
             String title = cursor.getString(titleColumnIndex);
             String author = cursor.getString(authorColumnIndex);
             String publisher = cursor.getString(publisherColumnIndex);
@@ -268,7 +376,7 @@ public class EditorActivity extends AppCompatActivity implements
 
             // Update the views on the screen with the values from the database
 
-
+            mImageUri.setText(image);
             mTitleEditText.setText(title);
             mAuthorEditText.setText(author);
             mPublisherText.setText(publisher);
@@ -282,6 +390,7 @@ public class EditorActivity extends AppCompatActivity implements
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+        mImageUri.setText("");
         mTitleEditText.setText("");
         mAuthorEditText.setText("");
         mPublisherText.setText("");
@@ -342,4 +451,6 @@ public class EditorActivity extends AppCompatActivity implements
         // Close the activity
         finish();
     }
+
+
 }

@@ -83,6 +83,9 @@ public class BooksCursorAdapter extends CursorAdapter{
 
                 Uri currentBookUri = ContentUris.withAppendedId(BooksEntry.CONTENT_URI, itemId);
                 int newQuantity = intBookQuantity - 1;
+                if (newQuantity < 0) {
+                    return;
+                }
                 ContentValues values = new ContentValues();
                 values.put(BooksEntry.COLUMN_QUANTITY, newQuantity);
 
@@ -93,6 +96,7 @@ public class BooksCursorAdapter extends CursorAdapter{
         });
 
     }
+
 
 
 }
