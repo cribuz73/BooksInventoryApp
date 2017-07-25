@@ -162,9 +162,12 @@ public class EditorActivity extends AppCompatActivity implements
             public void onClick(View v) {
                 String quantityString = mExistQuantityText.getText().toString().trim();
                 String modifyingQuantityString = mQuantityText.getText().toString().trim();
-
+                if (TextUtils.isEmpty(modifyingQuantityString)) {
+                    modifyingQuant = 1;
+                } else {
+                    modifyingQuant = Integer.parseInt(modifyingQuantityString);
+                }
                 quantity = Integer.parseInt(quantityString);
-                modifyingQuant = Integer.parseInt(modifyingQuantityString);
                 decreaseQuantity();
 
             }
@@ -175,9 +178,12 @@ public class EditorActivity extends AppCompatActivity implements
             public void onClick(View v) {
                 String quantityString = mExistQuantityText.getText().toString().trim();
                 String modifyingQuantityString = mQuantityText.getText().toString().trim();
-
+                if (TextUtils.isEmpty(modifyingQuantityString)) {
+                    modifyingQuant = 1;
+                } else {
+                    modifyingQuant = Integer.parseInt(modifyingQuantityString);
+                }
                 quantity = Integer.parseInt(quantityString);
-                modifyingQuant = Integer.parseInt(modifyingQuantityString);
                 increaseQuantity();
 
             }
@@ -492,6 +498,7 @@ public class EditorActivity extends AppCompatActivity implements
 
     public void increaseQuantity() {
         quantity = quantity + modifyingQuant;
+
         if (mCurrentBookUri == null) {
             Toast.makeText(this, getString(R.string.editor_valid_book_saved),
                     Toast.LENGTH_SHORT).show();
@@ -519,6 +526,7 @@ public class EditorActivity extends AppCompatActivity implements
                     Toast.LENGTH_SHORT).show();
             return;
         }
+
         if (mCurrentBookUri == null) {
             Toast.makeText(this, getString(R.string.editor_valid_book_saved),
                     Toast.LENGTH_SHORT).show();

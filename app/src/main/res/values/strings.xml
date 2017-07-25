@@ -54,6 +54,7 @@
     <string name="quantity_increased">Quantity increased</string>
     <string name="quantity_decreased">Quantity decreased</string>
     <string name="quantity_modify_error">Error updating quantity</string>
+    <string name="quantity_zero">Please insert a value</string>
 
 
 
