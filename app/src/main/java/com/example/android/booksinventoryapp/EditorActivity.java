@@ -59,7 +59,8 @@ public class EditorActivity extends AppCompatActivity implements
     private EditText mOrderText;
     private TextView mExistQuantityText;
     private ImageView mBookImage;
-    private  int quantity;
+    private int quantity;
+    private int modifyingQuant;
 
     private boolean mPetHasChanged = false;
     static final int PICK_IMAGE_REQUEST = 1;
@@ -86,6 +87,7 @@ public class EditorActivity extends AppCompatActivity implements
         if (mCurrentBookUri == null) {
             setTitle(getString(R.string.editor_add_book_title));
             invalidateOptionsMenu();
+            quantity = 0;
         } else {
             setTitle(getString(R.string.editor_edit_book_title));
             getLoaderManager().initLoader(EXISTING_BOOK_LOADER, null, this);
@@ -101,7 +103,8 @@ public class EditorActivity extends AppCompatActivity implements
         mQuantityText = (EditText) findViewById(R.id.adjust_quantity);
         mOrderText = (EditText) findViewById(R.id.new_order);
         mExistQuantityText = (TextView) findViewById(R.id.existing_quantity);
-        mExistQuantityText.setText("0");
+        String qstring = Integer.valueOf(quantity).toString();
+        mExistQuantityText.setText(qstring);
         mBookImage = (ImageView) findViewById(R.id.book_image);
 
 
@@ -152,6 +155,35 @@ public class EditorActivity extends AppCompatActivity implements
                 }
             }
         });
+
+        final Button decQuantButton = (Button) findViewById(R.id.decrease_button);
+        decQuantButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String quantityString = mExistQuantityText.getText().toString().trim();
+                String modifyingQuantityString = mQuantityText.getText().toString().trim();
+
+                quantity = Integer.parseInt(quantityString);
+                modifyingQuant = Integer.parseInt(modifyingQuantityString);
+                decreaseQuantity();
+
+            }
+        });
+        final Button incQuantButton = (Button) findViewById(R.id.increase_button);
+        incQuantButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String quantityString = mExistQuantityText.getText().toString().trim();
+                String modifyingQuantityString = mQuantityText.getText().toString().trim();
+
+                quantity = Integer.parseInt(quantityString);
+                modifyingQuant = Integer.parseInt(modifyingQuantityString);
+                increaseQuantity();
+
+            }
+        });
+
+
     }
 
     @Override
@@ -221,7 +253,9 @@ public class EditorActivity extends AppCompatActivity implements
         String supplierName = mSupplierText.getText().toString().trim();
         String supplierEmail = mSupplierEmailText.getText().toString().trim();
         String bookPriceString = mPriceText.getText().toString().trim();
-        String bookQuantityString = mQuantityText.getText().toString().trim();
+        String quantityString = mExistQuantityText.getText().toString().trim();
+
+        quantity = Integer.parseInt(quantityString);
 
         if (TextUtils.isEmpty(authorName)) {
             Toast.makeText(this, getString(R.string.editor_valid_author),
@@ -266,12 +300,12 @@ public class EditorActivity extends AppCompatActivity implements
             price = Double.parseDouble(bookPriceString);
         }
         values.put(BooksEntry.COLUMN_PRICE, price);
-
-//        int quantity = 0;
-        if (!TextUtils.isEmpty(bookQuantityString)) {
-            quantity = Integer.parseInt(bookQuantityString);
-        }
         values.put(BooksEntry.COLUMN_QUANTITY, quantity);
+
+
+        //   if (!TextUtils.isEmpty(bookQuantityString)) {
+        //   }
+        //  values.put(BooksEntry.COLUMN_QUANTITY, quantity);
 
         if (mCurrentBookUri == null) {
 
@@ -399,7 +433,7 @@ public class EditorActivity extends AppCompatActivity implements
             mSupplierEmailText.setText(supplierEmail);
             mPriceText.setText(Double.toString(price));
             mExistQuantityText.setText(Integer.toString(quantity));
-            mQuantityText.setText(Integer.toString(quantity));
+
 
         }
     }
@@ -453,8 +487,63 @@ public class EditorActivity extends AppCompatActivity implements
                         Toast.LENGTH_SHORT).show();
             }
         }
-
         finish();
     }
 
+    public void increaseQuantity() {
+        quantity = quantity + modifyingQuant;
+        if (mCurrentBookUri == null) {
+            Toast.makeText(this, getString(R.string.editor_valid_book_saved),
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+        ContentValues values = new ContentValues();
+        values.put(BooksEntry.COLUMN_QUANTITY, quantity);
+
+        int rowsAffected = getContentResolver().update(mCurrentBookUri, values, null, null);
+        mExistQuantityText.setText(Integer.toString(quantity));
+
+        if (rowsAffected == 0) {
+            Toast.makeText(this, getString(R.string.quantity_modify_error),
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, getString(R.string.quantity_increased),
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void decreaseQuantity() {
+        quantity = quantity - modifyingQuant;
+        if (quantity < 0) {
+            Toast.makeText(this, getString(R.string.editor_valid_quantity),
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (mCurrentBookUri == null) {
+            Toast.makeText(this, getString(R.string.editor_valid_book_saved),
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+        ContentValues values = new ContentValues();
+        values.put(BooksEntry.COLUMN_QUANTITY, quantity);
+        int rowsAffected = getContentResolver().update(mCurrentBookUri, values, null, null);
+        mExistQuantityText.setText(Integer.toString(quantity));
+
+        if (rowsAffected == 0) {
+            Toast.makeText(this, getString(R.string.quantity_modify_error),
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, getString(R.string.quantity_decreased),
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
 }
+
+
+
+
+
+
+
+
+

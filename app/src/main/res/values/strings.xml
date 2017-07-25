@@ -14,7 +14,7 @@
     <string name="quantity_adapter">quantity</string>
 
 
-    <string name="adjust_quantity">Update quantity</string>
+    <string name="adjust_quantity">Update quantity with</string>
     <string name="new_order">New order</string>
     <string name="book_price">Price</string>
 
@@ -40,6 +40,8 @@
     <string name="editor_valid_author">Please insert the book author</string>
     <string name="editor_valid_price">Please insert the book price</string>
     <string name="editor_valid_image">Please insert the book image</string>
+    <string name="editor_valid_quantity">Negative quantity</string>
+    <string name="editor_valid_book_saved">Save the new book first</string>
 
 
     <string name="delete_dialog_msg">Delete this book?</string>
@@ -48,5 +50,12 @@
 
     <string name="editor_delete_book_successful">Book deleted</string>
     <string name="editor_delete_book_failed">Error with deleting book</string>
+
+    <string name="quantity_increased">Quantity increased</string>
+    <string name="quantity_decreased">Quantity decreased</string>
+    <string name="quantity_modify_error">Error updating quantity</string>
+
+
+
 
 </resources>
