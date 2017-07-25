@@ -59,6 +59,7 @@ public class EditorActivity extends AppCompatActivity implements
     private EditText mOrderText;
     private TextView mExistQuantityText;
     private ImageView mBookImage;
+    private  int quantity;
 
     private boolean mPetHasChanged = false;
     static final int PICK_IMAGE_REQUEST = 1;
@@ -255,7 +256,9 @@ public class EditorActivity extends AppCompatActivity implements
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
-            Log.e(LOG_TAG, "No image");
+            Toast.makeText(this, getString(R.string.editor_valid_image),
+                    Toast.LENGTH_SHORT).show();
+            return;
         }
 
         double price = 0;
@@ -264,7 +267,7 @@ public class EditorActivity extends AppCompatActivity implements
         }
         values.put(BooksEntry.COLUMN_PRICE, price);
 
-        int quantity = 0;
+//        int quantity = 0;
         if (!TextUtils.isEmpty(bookQuantityString)) {
             quantity = Integer.parseInt(bookQuantityString);
         }
@@ -396,6 +399,8 @@ public class EditorActivity extends AppCompatActivity implements
             mSupplierEmailText.setText(supplierEmail);
             mPriceText.setText(Double.toString(price));
             mExistQuantityText.setText(Integer.toString(quantity));
+            mQuantityText.setText(Integer.toString(quantity));
+
         }
     }
 

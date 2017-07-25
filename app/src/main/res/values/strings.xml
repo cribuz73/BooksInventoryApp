@@ -39,6 +39,8 @@
     <string name="editor_valid_title">Please insert the book title</string>
     <string name="editor_valid_author">Please insert the book author</string>
     <string name="editor_valid_price">Please insert the book price</string>
+    <string name="editor_valid_image">Please insert the book image</string>
+
 
     <string name="delete_dialog_msg">Delete this book?</string>
     <string name="delete">Delete</string>
